@@ -2,6 +2,49 @@
 
 ![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A518-339933?logo=nodedotjs&logoColor=white) ![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white) ![Release](https://img.shields.io/badge/Vers%C3%A3o-3.1.0-00A7B5) ![Modo](https://img.shields.io/badge/Processos-Somente%20leitura-44546A)
 
+
+## 🎛️ Centro de operações · Observabilidade na prática
+
+> **Objetivo operacional:** investigar o comportamento do host que executa o servidor e interpretar corretamente os dados disponíveis. A trilha abaixo propõe **checkpoints manuais**; não existem testes de missões, placar ou certificações embutidos no dashboard.
+
+| Missão | Competência avaliada | Evidência / experimento | XP didático |
+|---|---|---|--:|
+| 01 · Inicialização | Subir um serviço HTTP | `npm ci` + `npm start` | 15 |
+| 02 · Pulso | Verificar disponibilidade | `GET /api/health` | 20 |
+| 03 · Telemetria | Interpretar CPU, RAM e processo Node.js | `GET /api/dashboard` | 25 |
+| 04 · Streaming | Inspecionar eventos SSE | `GET /api/stream` | 25 |
+| 05 · Comunicação | Exportar JSON e comparar relatórios | [Interface implementada em `server.js`](server.js) | 25 |
+| 06 · Análise crítica | Identificar limite do NEXUS LINK v2/v3 | [Explicação técnica](#comparação-com-uma-instância-remota) | 30 |
+
+**Checklist de missão** (para reproduzir localmente, não para marcar como teste automatizado)
+
+- [ ] Executar o serviço no Node.js 18+ e abrir o painel.
+- [ ] Inspecionar a resposta de `/api/health`.
+- [ ] Explicar o significado e a origem de duas métricas em `/api/dashboard`.
+- [ ] Observar pelo menos um evento `telemetry` pelo SSE.
+- [ ] Exportar um relatório e localizar o formato `nexus-os-report-v1`.
+- [ ] Explicar a incompatibilidade entre `nexus-os-live-v3` e `nexus-os-live-v2`.
+
+<details>
+<summary><strong>🏆 Certificação simbólica da trilha: critérios de domínio</strong></summary>
+
+| Selo de aprendizado | Critério verificável |
+|---|---|
+| 🟦 Operador | Serviço inicializado e endpoint de saúde consultado |
+| 🟪 Investigador | Origens de CPU, memória e runtime diferenciadas |
+| 🟨 Analista | SSE, histórico em memória e exportação compreendidos |
+| 🟩 Auditor | Limites de segurança e incompatibilidade v2/v3 documentados |
+
+Os selos são **metas de estudo**, não badges de CI ou certificados oficiais.
+
+</details>
+
+**🔒 Desafio de produção:** antes de expor o projeto publicamente, avalie os dados de hostname, interfaces e processos que ficam disponíveis sem autenticação. **Não publique capturas com informações sensíveis**.
+
+**📎 Fonte da evidência:** [`server.js`](server.js), [`package.json`](package.json) e as rotas descritas em [Guia de integração da API](#guia-de-integração-da-api).
+
+---
+
 Aplicação em português para acompanhar informações do sistema operacional, do processo Node.js e das requisições recebidas pelo servidor. O projeto usa Express e Helmet e concentra o servidor, as APIs e a interface no arquivo [server.js](server.js).
 
 As métricas correspondem ao ambiente em que o Node.js está em execução. Quando o servidor está na nuvem, o painel apresenta os recursos disponíveis nesse ambiente.
