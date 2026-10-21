@@ -1,68 +1,69 @@
 # 📊 NEXUS OS Omega V3 — Dashboard de monitoramento
 
-**Painel de observabilidade desenvolvido em Node.js**, com interface em português para acompanhar métricas do sistema operacional, do processo Node.js e das requisições HTTP recebidas pelo próprio servidor.
+Dashboard desenvolvido com **Node.js e Express** para acompanhar informações do sistema operacional, do processo Node.js e do próprio servidor HTTP. A interface está em português e apresenta indicadores que ajudam a observar o ambiente de execução.
 
-[![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A518-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org/) [![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white)](https://expressjs.com/) ![Versão do projeto](https://img.shields.io/badge/Vers%C3%A3o-3.1.0-0b7285)
+**Versão declarada:** `3.1.0` · **Runtime:** Node.js 18 ou superior · **Dependências principais:** Express e Helmet.
 
-## ✨ Recursos implementados
+## ✨ Recursos do dashboard
 
-| Área | Informações / funcionalidades |
+| Área | Informações e recursos disponíveis |
 |---|---|
-| CPU | Utilização média e por núcleo, clock, carga e histórico recente. |
-| Memória | RAM do host e indicadores RSS, heap e memória externa do processo. |
-| Sistema | Plataforma, kernel, arquitetura, hostname, uptime e interfaces de rede. |
-| Runtime | Versões Node.js/V8, event loop, heap e eventos de coleta de lixo. |
-| HTTP | Requisições, tempo médio e distribuição de status do serviço. |
-| Processos | Lista de processos visíveis, com filtros; **somente leitura**. |
-| Relatórios | Exportação/cópia de JSON, importação comparativa e CSV de sessão. |
-| Interface | Cinco temas, neon ajustável, tela cheia, modo de apresentação e `Ctrl+K`. |
+| CPU | Utilização média e por núcleo, modelo, frequência e histórico recente. |
+| Memória | RAM total, disponível e utilizada; memória do processo Node.js, incluindo heap e RSS. |
+| Sistema operacional | Plataforma, arquitetura, nome da máquina e tempo de atividade. |
+| Runtime Node.js | Versões do Node.js e do V8, uso de heap, event loop e eventos de coleta de lixo. |
+| Rede | Interfaces e endereços identificados pelo ambiente. |
+| Requisições HTTP | Quantidade de requisições, duração média, classes de status e taxa de erros do serviço. |
+| Processos | Consulta, filtro e ordenação dos processos que o ambiente permite visualizar. |
+| Armazenamento e arquivos | Informações do volume, quando disponíveis, e análise dos arquivos do projeto. |
+| Relatórios | Exportação e cópia de dados em JSON, comparação por importação e exportação de sessões em CSV. |
 
-Os indicadores e alertas de saúde são **heurísticas definidas no projeto**, não benchmarks independentes.
+A interface oferece cinco temas, controle de efeitos visuais, tela cheia, pausa de atualização e uma paleta de comandos aberta com `Ctrl+K` ou `Cmd+K`. O monitor de processos funciona em **modo somente leitura**: não encerra processos.
 
-## 🧱 Arquitetura
+## 🧱 Organização técnica
+
+O arquivo [`server.js`](server.js) concentra a coleta das métricas, as rotas HTTP e o código HTML, CSS e JavaScript da interface. O [`package.json`](package.json) registra dependências e scripts de execução.
 
 ```mermaid
 flowchart LR
-    A[SO e runtime Node.js] --> B[Coleta em server.js]
-    B --> C[APIs Express]
-    C --> D[Dashboard web]
-    C --> E[Fluxo SSE]
-    D --> F[Relatórios JSON e CSV]
+    A["Sistema operacional e processo Node.js"] --> B["Coleta em server.js"]
+    B --> C["Rotas Express"]
+    C --> D["API JSON e SSE"]
+    D --> E["Interface web"]
+    E --> F["Relatórios e gráficos"]
 ```
 
-O arquivo [server.js](server.js) reúne coleta de dados, rotas HTTP, HTML, CSS e JavaScript da interface. [package.json](package.json) contém dependências e scripts; [package-lock.json](package-lock.json), as versões resolvidas.
+## ⚙️ Instalação e execução
 
-## ⚙️ Requisitos e instalação
-
-Node.js **18 ou superior** e npm:
+**Pré-requisitos:** Node.js 18 ou superior e npm. Na raiz do repositório:
 
 ```bash
-git clone https://github.com/theroven79-droid/DASHBOARD-MONITORAMENTO.git
-cd DASHBOARD-MONITORAMENTO
 npm ci
 npm start
 ```
 
-Acesse **http://localhost:3000**. Por padrão, o servidor escuta em `0.0.0.0:3000` e usa a variável de ambiente `PORT` quando definida.
+Abra **http://localhost:3000** no navegador.
 
-Para desenvolvimento com reinício automático:
+Para reiniciar o servidor automaticamente durante o desenvolvimento:
 
 ```bash
 npm run dev
 ```
 
-O projeto declara Express `^5.1.0` e Helmet `^8.1.0` e não define script de testes.
+O script `dev` utiliza `node --watch server.js`. A porta padrão é `3000`, mas pode ser alterada pela variável de ambiente `PORT`.
 
-## 🌐 API HTTP
+## 🌐 Endpoints disponíveis
 
-| Método | Endpoint | Retorno |
+| Método | Rota | Finalidade |
 |---|---|---|
-| `GET` | `/` | Interface HTML do dashboard |
-| `GET` | `/api/dashboard` | Telemetria completa em JSON |
-| `GET` | `/api/public-snapshot` | Resumo de telemetria (esquema `nexus-os-live-v3`) |
-| `OPTIONS` | `/api/public-snapshot` | Preflight HTTP (204) |
-| `GET` | `/api/stream` | SSE com eventos `telemetry` e `fault` |
-| `GET` | `/api/health` | Status HTTP do serviço |
+| `GET` | `/` | Abre a interface do dashboard. |
+| `GET` | `/api/dashboard` | Retorna a telemetria completa em JSON. |
+| `GET` | `/api/public-snapshot` | Retorna um resumo da telemetria. |
+| `OPTIONS` | `/api/public-snapshot` | Responde à consulta de preflight. |
+| `GET` | `/api/stream` | Envia atualizações por Server-Sent Events (SSE). |
+| `GET` | `/api/health` | Informa o estado de disponibilidade do servidor. |
+
+Com o serviço iniciado, experimente:
 
 ```bash
 curl http://localhost:3000/api/health
@@ -70,30 +71,40 @@ curl http://localhost:3000/api/dashboard
 curl -N http://localhost:3000/api/stream
 ```
 
-Os perfis de atualização disponíveis são 1, 1,5, 3 e 5 segundos. O perfil de 1,5 segundo utiliza SSE; a interface pode consultar a API periodicamente se necessário. As amostras ficam em memória durante a execução do servidor.
+A última consulta mantém uma conexão aberta para receber eventos; encerre-a com `Ctrl+C` quando desejar.
+
+## ⏱️ Atualização das métricas
+
+O código utiliza amostragens periódicas da CPU e da lista de processos. A interface pode receber telemetria por **SSE**, com atualização padrão a cada **1,5 segundo**, ou consultar a API em intervalos configuráveis.
+
+Os históricos do servidor permanecem em memória e são descartados quando o processo é reiniciado. Preferências visuais podem ser armazenadas no `localStorage` do navegador. Os relatórios exportados utilizam o formato `nexus-os-report-v1`.
 
 ## ☁️ Publicação no Render
+
+Para configurar um Web Service Node.js com a raiz deste repositório:
 
 | Configuração | Valor |
 |---|---|
 | Build Command | `npm ci` |
 | Start Command | `npm start` |
-| Porta | Fornecida pela variável `PORT` |
+| Porta | Variável `PORT` fornecida pelo ambiente |
 
-**Endereço registrado no material da disciplina:** [dashboard-monitoramento-1.onrender.com](https://dashboard-monitoramento-1.onrender.com/). Não há garantia de disponibilidade contínua ou confirmação de que o deploy utiliza a mesma revisão do código.
+**Endereço mencionado no material da disciplina:** [Dashboard no Render](https://dashboard-monitoramento-1.onrender.com/). A presença desse link não garante que o serviço esteja disponível no momento da consulta nem que utilize a revisão mais recente do código.
 
-## ⚠️ Limitações e segurança
+## ⚠️ Limitações e cuidados de segurança
 
-- **NEXUS LINK:** a API remota produz `nexus-os-live-v3`, mas o cliente `fetchRemote` valida `nexus-os-live-v2`. Portanto, duas instâncias desta versão não estabelecem a comparação remota diretamente.
-- **Telemetria sem autenticação:** os endpoints expõem informações do ambiente. Avalie o uso em redes e serviços públicos.
-- **Medição contextual:** em nuvem, o painel mostra os recursos acessíveis ao processo no host/container, não o computador do visitante.
-- **Processos:** enumeração via PowerShell (Windows) ou `ps` (Linux); sem acesso a todos os processos, o painel recua para o processo Node.js.
-- **Frontend:** gráficos dependem do Chart.js carregado por CDN; há carregamento externo também de Lucide e fontes.
-- **Persistência:** históricos em memória são perdidos quando o servidor reinicia.
+- **Integração NEXUS LINK:** o servidor disponibiliza o esquema `nexus-os-live-v3`, enquanto o cliente remoto verifica `nexus-os-live-v2`. Por isso, duas instâncias desta versão não concluem a conexão remota diretamente. A comparação por **importação de relatórios JSON** é um recurso separado.
+- **Ausência de autenticação:** as rotas de telemetria não exigem login e podem expor detalhes do ambiente, como nome da máquina, interfaces e processos.
+- **Métricas do ambiente:** quando publicado na nuvem, o painel mostra recursos acessíveis ao processo Node.js no servidor ou container — **não** os recursos do computador do visitante.
+- **Acesso aos processos:** a coleta usa PowerShell no Windows e `ps` no Linux. Se a consulta não estiver disponível, o painel pode mostrar apenas o processo Node.js.
+- **Recursos externos:** os gráficos dependem do carregamento do Chart.js; a interface também utiliza outros recursos externos, como Lucide e fontes.
+- **Indicador de saúde:** a classificação é calculada por regras do projeto e não corresponde a um teste padronizado de desempenho.
+- **Testes automatizados:** o `package.json` não declara um script de testes.
 
-## 📚 Referências
+## 📚 Fontes e documentação
 
-- [Código principal](server.js) · [Manifesto npm](package.json)
-- [Documentação do Node.js — `os`](https://nodejs.org/api/os.html)
-- [SSE — MDN](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)
-- [Deploy Node/Express no Render](https://render.com/docs/deploy-node-express-app)
+- [Código principal — `server.js`](server.js)
+- [Dependências e scripts — `package.json`](package.json)
+- [Módulo `os` — Node.js](https://nodejs.org/api/os.html)
+- [Server-Sent Events — MDN](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)
+- [Deploy de aplicações Node/Express — Render](https://render.com/docs/deploy-node-express-app)
