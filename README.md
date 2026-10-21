@@ -1,5 +1,7 @@
 # NEXUS OS Omega V3 — Dashboard de monitoramento
 
+![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A518-339933?logo=nodedotjs&logoColor=white) ![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white) ![Release](https://img.shields.io/badge/Vers%C3%A3o-3.1.0-00A7B5) ![Modo](https://img.shields.io/badge/Processos-Somente%20leitura-44546A)
+
 Aplicação em português para acompanhar informações do sistema operacional, do processo Node.js e das requisições recebidas pelo servidor. O projeto usa Express e Helmet e concentra o servidor, as APIs e a interface no arquivo [server.js](server.js).
 
 As métricas correspondem ao ambiente em que o Node.js está em execução. Quando o servidor está na nuvem, o painel apresenta os recursos disponíveis nesse ambiente.
@@ -120,3 +122,77 @@ O material do projeto propõe usar a página como uma fonte do tipo **Navegador*
 - O gerenciador de tarefas permite apenas a consulta de informações: não oferece controles para encerrar processos.
 - Ao reiniciar o servidor, os históricos mantidos em memória são descartados.
 - Os scripts do [package.json](package.json) são `start` e `dev`; o projeto não define um script de testes.
+
+---
+
+## Arquitetura e fluxo de dados
+
+```mermaid
+flowchart LR
+    A["Sistema operacional e processo Node.js"] --> B["Coleta de telemetria em server.js"]
+    B --> C["/api/dashboard · JSON"]
+    B --> D["/api/stream · SSE"]
+    B --> E["/api/public-snapshot · Resumo"]
+    C --> F["Interface no navegador"]
+    D --> F
+    E --> G["Cliente externo (sujeito à compatibilidade do esquema)"]
+    F --> H["Gráficos, relatórios e exportação"]
+```
+
+## Início rápido e acesso
+
+```bash
+git clone https://github.com/theroven79-droid/DASHBOARD-MONITORAMENTO.git
+cd DASHBOARD-MONITORAMENTO
+npm ci
+npm start
+```
+
+Abra **http://localhost:3000**. Para testar disponibilidade:
+
+```bash
+curl http://localhost:3000/api/health
+```
+
+**Endereço registrado no material da Aula 07:** [Dashboard no Render](https://dashboard-monitoramento-1.onrender.com/). A existência desse link no material não garante disponibilidade contínua nem prova qual revisão do código está publicada.
+
+## Guia de integração da API
+
+| Caso de uso | Endpoint | Observações |
+|---|---|---|
+| Verificar se o serviço responde | `GET /api/health` | Não valida a precisão de todas as métricas |
+| Consultar um retrato completo | `GET /api/dashboard` | JSON, inclui campos de ambiente |
+| Consumir atualizações | `GET /api/stream` | `text/event-stream`; manter conexão aberta |
+| Consultar resumo remoto | `GET /api/public-snapshot` | Formato `nexus-os-live-v3` |
+| Abrir painel visual | `GET /` | Interface HTML/JavaScript |
+
+### Exemplo de SSE no navegador
+
+```js
+const stream = new EventSource("http://localhost:3000/api/stream");
+stream.addEventListener("telemetry", event => {
+  const message = JSON.parse(event.data);
+  console.log(message);
+});
+stream.addEventListener("fault", event => console.warn(event.data));
+```
+
+Este trecho ilustra o consumo de eventos; o formato detalhado do payload pode ser consultado em [server.js](server.js).
+
+## Operação, segurança e limites
+
+- **Exposição de dados:** os endpoints de telemetria não possuem autenticação. Evite publicar indiscriminadamente informações do host, rede ou processos em ambientes sensíveis.
+- **Persistência:** os históricos do servidor são mantidos em memória. Exportações de sessão ocorrem no navegador.
+- **Compatibilidade remota:** `publicSnapshot` usa `nexus-os-live-v3`; `fetchRemote` verifica `nexus-os-live-v2`. Esta versão requer alinhamento dos esquemas para comparação remota direta.
+- **Métricas em nuvem:** descrevem o container/instância onde o Node.js está rodando; não o computador do visitante.
+- **Testes:** `package.json` não declara script `test` nem suíte automatizada.
+
+## Referências e rastreabilidade
+
+| Recurso | Fonte |
+|---|---|
+| Implementação, interface, rotas e regras de coleta | [server.js](server.js) |
+| Dependências, scripts e versão de runtime | [package.json](package.json) |
+| Deploy Node/Express no Render | [Documentação do Render](https://render.com/docs/deploy-node-express-app) |
+| Eventos enviados pelo servidor | [Server-Sent Events (MDN)](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) |
+| Instrumentação nativa do Node.js | [Módulo `os` (Node.js)](https://nodejs.org/api/os.html) |
