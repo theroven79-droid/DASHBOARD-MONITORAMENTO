@@ -9,7 +9,7 @@ As métricas correspondem ao ambiente em que o Node.js está em execução. Quan
 | Arquivo | Conteúdo |
 | --- | --- |
 | [server.js](server.js) | Coleta de métricas, rotas HTTP, HTML, CSS e JavaScript da interface. |
-| [package.json](package.json) | Versão do projeto, dependências, scripts e requisito de Node.js. |
+| [package.json](package.json) | Versão do projeto, dependências, scripts e versão mínima do Node.js. |
 | [package-lock.json](package-lock.json) | Versões das dependências registradas pelo npm. |
 | [.gitignore](.gitignore) | Regras para ignorar dependências, arquivos de ambiente e logs. |
 
@@ -28,7 +28,7 @@ O servidor utiliza a porta **3000** por padrão e escuta em `0.0.0.0`. Para esco
 PORT=3001 npm start
 ```
 
-Para desenvolver com reinício automático após alterações no arquivo:
+Para reiniciar o servidor automaticamente após alterações em `server.js`:
 
 ```bash
 npm run dev
@@ -41,7 +41,7 @@ npm run dev
 | CPU | Uso médio, uso por núcleo, média e pico recentes, modelo, frequência e carga média. |
 | Memória | RAM total, livre e usada; RSS, heap e outras informações de memória do processo Node.js. |
 | Sistema operacional | Nome da máquina, plataforma, versão do sistema, arquitetura e tempo de atividade. |
-| Runtime | Versões do Node.js e V8, atraso e utilização do event loop, heap e eventos de coleta de lixo. |
+| Runtime | Versões do Node.js e do V8, atraso e utilização do event loop, heap e eventos de coleta de lixo. |
 | Rede | Interfaces e endereços identificados pelo módulo `os`. |
 | HTTP | Quantidade de requisições, duração média das respostas, classes de status e taxa de erros. |
 | Projeto | Quantidade e tamanho dos arquivos da aplicação, com exclusão de `node_modules` e `.git`. |
@@ -54,10 +54,10 @@ A pontuação de saúde e os alertas são calculados por regras definidas no có
 ## Recursos da interface
 
 - Cinco temas: Cyber Cyan, Quantum Violet, Matrix Emerald, Crimson Reactor e Solar Gold.
-- Intensidade de neon suave, intensa ou desligada.
-- Modo observação, modo apresentação, tela cheia e controle de efeitos visuais.
+- Neon suave, intenso ou desligado.
+- Modos de observação e apresentação, tela cheia e controle de efeitos visuais.
 - Pausa e retomada da atualização.
-- Paleta de comandos com `Ctrl+K` ou `Cmd+K`; navegação por setas, execução com Enter e fechamento com Esc.
+- Paleta de comandos com `Ctrl+K` ou `Cmd+K`; navegação pelas teclas de seta, execução com Enter e fechamento com Esc.
 - Filtro de processos por nome ou PID e ordenação por CPU, memória, nome ou PID.
 - Exportação e cópia de relatórios em JSON.
 - Importação de dois relatórios para comparação.
@@ -94,7 +94,7 @@ Ajuste a porta se tiver definido outro valor em `PORT`.
 
 ## Comparação com uma instância remota
 
-O painel NEXUS LINK possui um campo de URL para consultar outra instância por meio de `/api/public-snapshot`.
+O painel NEXUS LINK possui um campo para informar a URL de outra instância e consultá-la por meio de `/api/public-snapshot`.
 
 Há uma divergência no código atual: a função `publicSnapshot` produz o esquema `nexus-os-live-v3`, enquanto `fetchRemote` aceita `nexus-os-live-v2`. Assim, duas instâncias desta versão não concluem a conexão remota entre si. A comparação por importação de relatórios JSON utiliza um formato separado.
 
@@ -117,6 +117,6 @@ O material do projeto propõe usar a página como uma fonte do tipo **Navegador*
 
 - Chart.js, Lucide e as fontes da interface são carregados por serviços externos. Sem Chart.js, o código mantém as informações textuais e não cria os gráficos.
 - A lista de processos usa PowerShell no Windows e `ps` no Linux. Se a consulta não estiver disponível, o painel mostra apenas o processo Node.js.
-- O gerenciador de tarefas é somente leitura: não oferece controles para encerrar processos.
-- Reiniciar o servidor descarta seus históricos em memória.
+- O gerenciador de tarefas permite apenas a consulta de informações: não oferece controles para encerrar processos.
+- Ao reiniciar o servidor, os históricos mantidos em memória são descartados.
 - Os scripts do [package.json](package.json) são `start` e `dev`; o projeto não define um script de testes.
