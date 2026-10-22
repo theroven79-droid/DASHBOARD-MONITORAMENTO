@@ -1,60 +1,61 @@
-# 📊 Relatório técnico — NEXUS OS Omega V3
+# 📊 NEXUS OS Omega V3
 
-## 📌 Apresentação do projeto
+Um dashboard de **monitoramento de sistemas operacionais** que transforma informações do servidor em indicadores, gráficos e painéis interativos. O NEXUS OS Omega V3 foi desenvolvido com **Node.js e Express** e apresenta, em português, dados sobre recursos do sistema, processos e comportamento da própria aplicação web.
 
-Este repositório contém o **NEXUS OS Omega V3**, um painel web de observabilidade desenvolvido em Node.js e Express. A aplicação reúne informações sobre o ambiente de execução, o processo Node.js e as requisições recebidas pelo servidor. A versão declarada no projeto é **3.1.0**.
+## ✨ O que o painel oferece
 
-## 📂 Arquivos do repositório
+| Área | Recursos disponíveis |
+|---|---|
+| **CPU e memória** | Uso do processador, informações por núcleo, RAM e consumo de memória do Node.js. |
+| **Sistema e rede** | Plataforma, arquitetura, hostname, tempo de atividade e interfaces de rede. |
+| **Processos** | Visualização, pesquisa e ordenação de processos em modo somente leitura. |
+| **Runtime e HTTP** | Indicadores do event loop, heap, versões do ambiente e métricas das requisições. |
+| **Análise visual** | Gráficos, histórico de amostras, alertas e indicadores de saúde do ambiente. |
+| **Relatórios** | Exportação de dados em JSON, sessão em CSV e comparação entre relatórios importados. |
+
+A interface inclui **cinco temas visuais**, controles de apresentação e uma paleta de comandos acessível por **Ctrl+K**. As informações podem chegar por **Server-Sent Events (SSE)** ou por consultas periódicas.
+
+## 🛠️ Tecnologias utilizadas
+
+| Tecnologia | Aplicação |
+|---|---|
+| **Node.js** | Coleta de métricas e execução do servidor. |
+| **Express** | Rotas HTTP e entrega da interface. |
+| **Helmet** | Configuração de cabeçalhos HTTP de segurança. |
+| **HTML, CSS e JavaScript** | Construção da interface interativa. |
+
+## 📂 Estrutura do projeto
 
 | Arquivo | Responsabilidade |
 |---|---|
-| [`server.js`](server.js) | Implementa coleta de métricas, rotas HTTP e interface em HTML, CSS e JavaScript. |
-| [`package.json`](package.json) | Define dependências, versão mínima do Node.js e comandos de execução. |
-| [`package-lock.json`](package-lock.json) | Registra as versões das dependências. |
-| [`.gitignore`](.gitignore) | Define arquivos e pastas que o Git deve ignorar. |
+| [`server.js`](server.js) | Servidor, coleta de informações, rotas e interface do dashboard. |
+| [`package.json`](package.json) | Dependências, scripts e requisitos de execução. |
+| [`package-lock.json`](package-lock.json) | Registro das versões das dependências npm. |
+| [`.gitignore`](.gitignore) | Regras de exclusão de arquivos do Git. |
 
-A aplicação concentra a maior parte das funcionalidades em `server.js`, sem separar o frontend em arquivos próprios.
+## 🌐 Rotas do servidor
 
-## 🧠 Resumo das funcionalidades
-
-| Área | Conteúdo apresentado |
+| Endpoint | Finalidade |
 |---|---|
-| Processador e memória | Indicadores de CPU, RAM e consumo de memória do processo Node.js. |
-| Sistema operacional | Plataforma, arquitetura, nome da máquina, tempo de atividade e interfaces de rede. |
-| Ambiente de execução | Versões do Node.js e V8, heap e indicadores do event loop. |
-| Requisições HTTP | Volume, duração e categorias de respostas do próprio serviço. |
-| Processos | Consulta, pesquisa e ordenação dos processos visíveis, em modo somente leitura. |
-| Interface e relatórios | Gráficos, temas visuais, exportações JSON e CSV e comparação por importação de relatórios. |
+| `/` | Abre o dashboard. |
+| `/api/dashboard` | Retorna informações de monitoramento em JSON. |
+| `/api/public-snapshot` | Fornece um resumo das métricas. |
+| `/api/stream` | Transmite atualizações via SSE. |
+| `/api/health` | Retorna informações sobre o estado do serviço. |
 
-A interface utiliza atualizações periódicas e eventos **SSE (Server-Sent Events)**. Os principais endpoints implementados são:
+## ▶️ Como executar
 
-| Rota | Finalidade |
-|---|---|
-| `/` | Apresentar o painel. |
-| `/api/dashboard` | Fornecer a telemetria em JSON. |
-| `/api/public-snapshot` | Disponibilizar um resumo dos indicadores. |
-| `/api/stream` | Transmitir eventos de telemetria. |
-| `/api/health` | Informar a disponibilidade do servidor. |
-
-## ⚙️ Execução do projeto
-
-O manifesto exige **Node.js 18 ou superior**. Com npm instalado, a partir da raiz:
+O projeto declara suporte a **Node.js 18 ou superior**. Com o npm disponível:
 
 ```bash
 npm ci
 npm start
 ```
 
-O painel usa a porta 3000 por padrão e respeita a variável `PORT`. Para desenvolvimento, há o comando `npm run dev`.
+O servidor utiliza a porta **3000** por padrão, ou o valor da variável `PORT`. Para desenvolvimento, o manifesto também oferece `npm run dev`.
 
-## ⚠️ Observações técnicas
-
-- As métricas correspondem ao **servidor que executa o Node.js**, inclusive quando ele está hospedado na nuvem.
-- Os históricos do servidor são temporários e permanecem em memória.
-- As rotas de telemetria não exigem autenticação e podem expor informações do ambiente.
-- O NEXUS LINK apresenta incompatibilidade entre o esquema `nexus-os-live-v3` produzido pelo servidor e o esquema `nexus-os-live-v2` esperado pelo cliente remoto. A comparação por importação de relatórios é um recurso distinto.
-- Gráficos e alguns elementos visuais dependem de bibliotecas e fontes externas.
+> 💡 Quando o dashboard está hospedado na nuvem, as métricas exibidas são do **servidor ou contêiner que executa a aplicação**, não do dispositivo de quem acessa a página.
 
 ## 📚 Referências
 
-[Código-fonte](server.js) · [Manifesto npm](package.json) · [Node.js — módulo `os`](https://nodejs.org/api/os.html) · [MDN — SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) · [Render — deploy Node/Express](https://render.com/docs/deploy-node-express-app)
+[Node.js — módulo `os`](https://nodejs.org/api/os.html) · [MDN — Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) · [Render — Node.js e Express](https://render.com/docs/deploy-node-express-app)
